@@ -1,0 +1,36 @@
+# ─── Environment & Secrets ───────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ─── Node ────────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ─── Hardhat ─────────────────────────────────────────────────────────────────
+contracts/artifacts/
+contracts/cache/
+contracts/typechain-types/
+contracts/dist/
+contracts/deployments/
+
+# ─── Next.js ─────────────────────────────────────────────────────────────────
+frontend/.next/
+frontend/out/
+frontend/dist/
+
+# ─── OS ──────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Editor ──────────────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# ─── Coverage ────────────────────────────────────────────────────────────────
+coverage/
+lcov.info

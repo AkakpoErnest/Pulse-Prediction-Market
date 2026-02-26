@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Variables ─────────────────────────────────────────────────────────── */
+:root {
+  --color-pulse:        #ff2785;
+  --color-somnia:       #2f5cff;
+  --color-bg:           #04080f;
+  --color-surface:      #0f1629;
+  --color-surface-2:    #1a243d;
+  --color-border:       rgba(255, 255, 255, 0.06);
+  --color-text:         #f8fafc;
+  --color-text-muted:   #94a3b8;
+  --font-inter:         'Inter', sans-serif;
+  --font-mono:          'JetBrains Mono', monospace;
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-inter);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 39, 133, 0.3);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 39, 133, 0.6); }
+
+/* ─── Glass morphism utility ─────────────────────────────────────────────────── */
+@layer components {
+  .glass {
+    background: rgba(15, 22, 41, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .glass-card {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 39, 133, 0.05) 0%,
+      rgba(47, 92, 255, 0.05) 100%
+    );
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .neon-border-pulse {
+    border: 1px solid rgba(255, 39, 133, 0.4);
+    box-shadow: 0 0 20px rgba(255, 39, 133, 0.15), inset 0 0 20px rgba(255, 39, 133, 0.05);
+  }
+
+  .neon-border-somnia {
+    border: 1px solid rgba(47, 92, 255, 0.4);
+    box-shadow: 0 0 20px rgba(47, 92, 255, 0.15), inset 0 0 20px rgba(47, 92, 255, 0.05);
+  }
+
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center gap-2
+           px-6 py-3 rounded-2xl font-semibold text-sm
+           bg-pulse-500 text-white
+           hover:bg-pulse-400 active:scale-95
+           transition-all duration-200
+           shadow-pulse hover:shadow-pulse-lg;
+  }
+
+  .btn-secondary {
+    @apply relative inline-flex items-center justify-center gap-2
+           px-6 py-3 rounded-2xl font-semibold text-sm
+           glass text-white
+           hover:border-pulse-500/50 active:scale-95
+           transition-all duration-200;
+  }
+
+  .btn-yes {
+    @apply relative inline-flex items-center justify-center gap-2
+           px-6 py-3 rounded-2xl font-bold text-sm
+           bg-emerald-500/20 text-emerald-400 border border-emerald-500/40
+           hover:bg-emerald-500/30 hover:border-emerald-400 active:scale-95
+           transition-all duration-200;
+  }
+
+  .btn-no {
+    @apply relative inline-flex items-center justify-center gap-2
+           px-6 py-3 rounded-2xl font-bold text-sm
+           bg-red-500/20 text-red-400 border border-red-500/40
+           hover:bg-red-500/30 hover:border-red-400 active:scale-95
+           transition-all duration-200;
+  }
+
+  .input-field {
+    @apply w-full bg-dark-300/50 border border-white/10 rounded-xl px-4 py-3
+           text-white placeholder-slate-500
+           focus:outline-none focus:border-pulse-500/60 focus:ring-1 focus:ring-pulse-500/30
+           transition-all duration-200;
+  }
+
+  .market-card {
+    @apply glass-card rounded-3xl p-6
+           hover:border-pulse-500/20 hover:shadow-pulse
+           transition-all duration-300 cursor-pointer;
+  }
+
+  .badge-active    { @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/25; }
+  .badge-resolved  { @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-somnia-500/15 text-somnia-400 border border-somnia-500/25; }
+  .badge-cancelled { @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-500/15 text-slate-400 border border-slate-500/25; }
+  .badge-yes       { @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400; }
+  .badge-no        { @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-500/15 text-red-400; }
+}
+
+/* ─── RainbowKit override to match dark theme ────────────────────────────────── */
+[data-rk] {
+  --rk-colors-accentColor: #ff2785 !important;
+  --rk-colors-accentColorForeground: #ffffff !important;
+  --rk-colors-modalBackground: #0f1629 !important;
+  --rk-colors-modalBorder: rgba(255,255,255,0.06) !important;
+  --rk-colors-menuItemBackground: rgba(255,39,133,0.1) !important;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────────── */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(255,39,133,0.4); }
+  50%       { box-shadow: 0 0 40px rgba(255,39,133,0.8), 0 0 60px rgba(47,92,255,0.4); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
