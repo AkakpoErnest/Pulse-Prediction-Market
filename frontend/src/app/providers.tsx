@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 import { wagmiConfig } from "@/lib/wagmi";
+import { ToastProvider } from "@/context/ToastContext";
+import { UserProvider } from "@/context/UserContext";
 import "@rainbow-me/rainbowkit/styles.css";
 
 const queryClient = new QueryClient({
@@ -32,7 +34,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
             learnMoreUrl: "https://somnia.network",
           }}
         >
-          {children}
+          <ToastProvider>
+            <UserProvider>
+              {children}
+            </UserProvider>
+          </ToastProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

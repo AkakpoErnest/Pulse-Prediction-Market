@@ -13,14 +13,16 @@ const CONTRACT_ADDRESSES: Record<number, { PulseMarket: Address; SomniaEventHand
   },
 };
 
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000" as Address;
+
 export function getPulseMarketAddress(chainId: number): Address {
-  const addrs = CONTRACT_ADDRESSES[chainId];
-  if (!addrs) throw new Error(`No deployment for chainId ${chainId}`);
-  return addrs.PulseMarket;
+  return CONTRACT_ADDRESSES[chainId]?.PulseMarket ?? ZERO_ADDRESS;
 }
 
 export function getEventHandlerAddress(chainId: number): Address {
-  const addrs = CONTRACT_ADDRESSES[chainId];
-  if (!addrs) throw new Error(`No deployment for chainId ${chainId}`);
-  return addrs.SomniaEventHandler;
+  return CONTRACT_ADDRESSES[chainId]?.SomniaEventHandler ?? ZERO_ADDRESS;
+}
+
+export function isCorrectChain(chainId: number): boolean {
+  return chainId === SOMNIA_CHAIN_ID;
 }

@@ -1,0 +1,10 @@
+{
+  "network": "somnia",
+  "chainId": 50312,
+  "deployer": "0x21C275Ff0DB6100cE7c99D2E96F4179943E21937",
+  "timestamp": "2026-02-27T14:41:59.248Z",
+  "contracts": {
+    "PulseMarket": "0xF996C610619C0376840d4634af8477e9CBFF1AE2",
+    "SomniaEventHandler": "0x2a3563D707E4d61797D80832CA76F1621221cdc1"
+  }
+}

@@ -25,7 +25,7 @@ export function useCreateMarket() {
     reset,
   } = useWriteContract();
 
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+  const { isLoading: isConfirming, isSuccess, data: receipt } = useWaitForTransactionReceipt({
     hash,
   });
 
@@ -51,6 +51,7 @@ export function useCreateMarket() {
   return {
     createMarket,
     hash,
+    receipt,
     isPending:    isPending || isConfirming,
     isSuccess,
     error,
