@@ -136,6 +136,25 @@ export function useClaimRefund(marketId: bigint) {
   return { claimRefund, hash, isPending: isPending || isConfirming, isSuccess, error, reset };
 }
 
+// ─── Withdraw Creator Fee ─────────────────────────────────────────────────────
+
+export function useWithdrawCreatorFee(marketId: bigint) {
+  const chainId = useChainId();
+  const { writeContract, data: hash, isPending, error, reset } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+
+  function withdrawCreatorFee() {
+    writeContract({
+      address:      getPulseMarketAddress(chainId),
+      abi:          PULSE_MARKET_ABI,
+      functionName: "withdrawCreatorFee",
+      args:         [marketId],
+    });
+  }
+
+  return { withdrawCreatorFee, hash, isPending: isPending || isConfirming, isSuccess, error, reset };
+}
+
 // ─── Cancel Expired Market ────────────────────────────────────────────────────
 
 export function useCancelExpiredMarket(marketId: bigint) {

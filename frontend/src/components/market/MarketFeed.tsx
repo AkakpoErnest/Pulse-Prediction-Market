@@ -96,7 +96,7 @@ export function MarketFeed() {
             Previous
           </button>
           <span className="flex items-center px-4 text-slate-400 text-sm">
-            Page {(page + 1n).toString()}
+            Page {(page + 1n).toString()} of {((count + PAGE_SIZE - 1n) / PAGE_SIZE).toString()}
           </span>
           <button
             onClick={() => setPage((p) => p + 1n)}

@@ -1,5 +1,6 @@
 import { encodeAbiParameters, decodeAbiParameters, keccak256, toHex } from "viem";
 import { ComparisonOp, DecodedCondition } from "@/types";
+import { COMPARISON_OP_LABELS } from "@/constants";
 
 // ─── Condition Encoding ────────────────────────────────────────────────────────
 
@@ -35,7 +36,7 @@ export const WELL_KNOWN_TOPICS: Record<string, `0x${string}`> = {
 export function formatConditionLabel(conditionData: `0x${string}`, topic: string): string {
   try {
     const { op, threshold } = decodeCondition(conditionData);
-    const opSymbol = ["›", "≥", "‹", "≤", "="][op] ?? "?";
+    const opSymbol = COMPARISON_OP_LABELS[op] ?? "?";
     const stt = Number(threshold) / 1e18;
     return `value ${opSymbol} ${stt} STT`;
   } catch {

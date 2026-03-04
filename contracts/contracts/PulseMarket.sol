@@ -84,6 +84,7 @@ contract PulseMarket is IPulseMarket, ReentrancyGuard, Ownable, Pausable {
         uint256 amount = platformFeeBalance;
         require(amount > 0, "PM: no fees");
         platformFeeBalance = 0;
+        emit PlatformFeesWithdrawn(owner(), amount);
         _transfer(owner(), amount);
     }
 

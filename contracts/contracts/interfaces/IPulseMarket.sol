@@ -83,6 +83,8 @@ interface IPulseMarket {
 
     event CreatorFeeWithdrawn(uint256 indexed marketId, address indexed creator, uint256 amount);
 
+    event PlatformFeesWithdrawn(address indexed to, uint256 amount);
+
     // ─── Core Functions ───────────────────────────────────────────────────────
 
     function createMarket(

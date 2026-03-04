@@ -3,11 +3,13 @@
 import { useMarketCount } from "@/hooks/usePulseMarket";
 import { useChainId } from "wagmi";
 import { SOMNIA_CHAIN_ID } from "@/constants";
+import { areContractsConfigured } from "@/lib/contracts/addresses";
 
 export function StatsBar() {
   const { count } = useMarketCount();
   const chainId   = useChainId();
-  const isCorrectChain = chainId === SOMNIA_CHAIN_ID;
+  const isCorrectChain     = chainId === SOMNIA_CHAIN_ID;
+  const contractsConfigured = areContractsConfigured();
 
   const stats = [
     { label: "Total Markets",    value: count.toString(),    color: "text-pulse-400"  },
@@ -27,8 +29,15 @@ export function StatsBar() {
         ))}
       </div>
 
+      {/* Misconfigured contracts warning */}
+      {!contractsConfigured && (
+        <div className="mt-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm text-center">
+          <strong>App not configured.</strong> Set <code className="font-mono text-xs bg-red-500/20 px-1 rounded">NEXT_PUBLIC_PULSE_MARKET_ADDRESS</code> and <code className="font-mono text-xs bg-red-500/20 px-1 rounded">NEXT_PUBLIC_EVENT_HANDLER_ADDRESS</code> in your <code className="font-mono text-xs">.env</code>.
+        </div>
+      )}
+
       {/* Wrong network warning */}
-      {chainId && !isCorrectChain && (
+      {contractsConfigured && chainId && !isCorrectChain && (
         <div className="mt-3 px-4 py-3 rounded-xl bg-yellow-500/10 border border-yellow-500/30 text-yellow-300 text-sm text-center">
           Switch to <strong>Somnia Testnet</strong> (Chain ID 50312) to interact with markets.
           <a
@@ -42,5 +51,6 @@ export function StatsBar() {
         </div>
       )}
     </div>
+
   );
 }

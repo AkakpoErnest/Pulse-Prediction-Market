@@ -10,6 +10,7 @@ import {
   useClaimWinnings,
   useClaimRefund,
   useCancelExpiredMarket,
+  useWithdrawCreatorFee,
 } from "@/hooks/useMarketActions";
 import { Market, MarketStatus, Outcome } from "@/types";
 import { formatConditionLabel } from "@/lib/contracts/encode";
@@ -217,17 +218,20 @@ function ClaimPanel({
   address:   `0x${string}` | undefined;
   onSuccess: () => void;
 }) {
-  const { claimWinnings, isPending: claimPending,   isSuccess: claimSuccess }  = useClaimWinnings(market.id);
-  const { claimRefund,   isPending: refundPending,  isSuccess: refundSuccess } = useClaimRefund(market.id);
-  const { cancelExpiredMarket, isPending: cancelPending } = useCancelExpiredMarket(market.id);
+  const { claimWinnings,      isPending: claimPending,   isSuccess: claimSuccess }  = useClaimWinnings(market.id);
+  const { claimRefund,        isPending: refundPending,  isSuccess: refundSuccess } = useClaimRefund(market.id);
+  const { cancelExpiredMarket, isPending: cancelPending }                           = useCancelExpiredMarket(market.id);
+  const { withdrawCreatorFee, isPending: creatorFeePending, isSuccess: creatorFeeSuccess } = useWithdrawCreatorFee(market.id);
 
-  if (claimSuccess || refundSuccess) onSuccess();
+  if (claimSuccess || refundSuccess || creatorFeeSuccess) onSuccess();
 
-  const hasBet      = userBet && userBet.amount > 0n;
-  const isWinner    = hasBet && market.status === MarketStatus.Resolved &&
+  const hasBet       = userBet && userBet.amount > 0n;
+  const isWinner     = hasBet && market.status === MarketStatus.Resolved &&
     ((market.outcome === Outcome.Yes && userBet.isYes) || (market.outcome === Outcome.No && !userBet.isYes));
-  const canRefund   = hasBet && market.status === MarketStatus.Cancelled && !userBet.claimed;
-  const isExpired   = Number(market.endTime) < Date.now() / 1000;
+  const canRefund    = hasBet && market.status === MarketStatus.Cancelled && !userBet.claimed;
+  const isExpired    = Number(market.endTime) < Date.now() / 1000;
+  const isCreator    = address?.toLowerCase() === market.creator.toLowerCase();
+  const hasCreatorFee = isCreator && market.status === MarketStatus.Resolved && market.creatorFeeCollected > 0n;
 
   if (!address) return null;
 
@@ -252,6 +256,16 @@ function ClaimPanel({
           className="btn-secondary w-full"
         >
           {refundPending ? "Refunding..." : "Claim Refund"}
+        </button>
+      )}
+
+      {hasCreatorFee && (
+        <button
+          onClick={withdrawCreatorFee}
+          disabled={creatorFeePending}
+          className="btn-secondary w-full text-pulse-400"
+        >
+          {creatorFeePending ? "Withdrawing..." : "Withdraw Creator Fee (2%)"}
         </button>
       )}
 

@@ -91,6 +91,7 @@ export function CreateMarketModal({ isOpen, onClose }: Props) {
   const [mode, setMode]   = useState<Mode>("simple");
   const [step, setStep]   = useState<1 | 2>(1);
   const [lastMarketId, setLastMarketId] = useState<bigint | null>(null);
+  const [showSkipWarning, setShowSkipWarning] = useState(false);
 
   // simple-mode state
   const [template, setTemplate]             = useState<Template>(TEMPLATES[0]);
@@ -125,6 +126,7 @@ export function CreateMarketModal({ isOpen, onClose }: Props) {
     setSimpleDuration(3600);
     setForm(DEFAULT_FORM);
     setLastMarketId(null);
+    setShowSkipWarning(false);
     resetCreate();
     onClose();
   }, [onClose, resetCreate]);
@@ -272,11 +274,14 @@ export function CreateMarketModal({ isOpen, onClose }: Props) {
                           type="text"
                           value={simpleContract}
                           onChange={(e) => setSimpleContract(e.target.value)}
-                          className="input-field font-mono text-sm"
+                          className={`input-field font-mono text-sm ${simpleContract && !validSimpleContract ? "border-red-500/50" : ""}`}
                           placeholder="0x…"
                           pattern="^0x[0-9a-fA-F]{40}$"
                           required
                         />
+                        {simpleContract && !validSimpleContract && (
+                          <p className="text-xs text-red-400 mt-1">Must be a valid 0x address (42 chars)</p>
+                        )}
                       </div>
 
                       {/* Threshold + Duration side by side */}
@@ -365,11 +370,14 @@ export function CreateMarketModal({ isOpen, onClose }: Props) {
                           type="text"
                           value={form.watchedContract}
                           onChange={(e) => update("watchedContract", e.target.value)}
-                          className="input-field font-mono text-sm"
+                          className={`input-field font-mono text-sm ${form.watchedContract && !/^0x[0-9a-fA-F]{40}$/.test(form.watchedContract) ? "border-red-500/50" : ""}`}
                           placeholder="0x..."
                           pattern="^0x[0-9a-fA-F]{40}$"
                           required
                         />
+                        {form.watchedContract && !/^0x[0-9a-fA-F]{40}$/.test(form.watchedContract) && (
+                          <p className="text-xs text-red-400 mt-1">Must be a valid 0x address (42 chars)</p>
+                        )}
                       </div>
 
                       <div>
@@ -436,7 +444,7 @@ export function CreateMarketModal({ isOpen, onClose }: Props) {
 
                       <button
                         type="submit"
-                        disabled={!address || isCreating}
+                        disabled={!address || isCreating || form.question.trim().length === 0 || form.question.length > 280}
                         className="btn-primary w-full disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         {!address ? "Connect Wallet First" : isCreating ? "Creating…" : "Create Market →"}
@@ -486,10 +494,34 @@ export function CreateMarketModal({ isOpen, onClose }: Props) {
                     </button>
                   )}
 
-                  {!subscribeSuccess && (
-                    <button onClick={handleClose} className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
-                      Skip for now (settle manually later)
+                  {!subscribeSuccess && !showSkipWarning && (
+                    <button
+                      onClick={() => setShowSkipWarning(true)}
+                      className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+                    >
+                      Skip for now
                     </button>
+                  )}
+
+                  {showSkipWarning && (
+                    <div className="px-3 py-2.5 rounded-xl bg-yellow-500/10 border border-yellow-500/30 text-xs text-yellow-300 space-y-2">
+                      <p className="font-semibold">⚠ Reactive settlement won&apos;t work without this step.</p>
+                      <p className="text-yellow-400/70">Your market will only settle if someone manually triggers it after expiry. Skip anyway?</p>
+                      <div className="flex gap-2 pt-1">
+                        <button
+                          onClick={handleClose}
+                          className="flex-1 py-1.5 rounded-lg bg-yellow-500/20 hover:bg-yellow-500/30 transition-colors font-medium"
+                        >
+                          Yes, skip
+                        </button>
+                        <button
+                          onClick={() => setShowSkipWarning(false)}
+                          className="flex-1 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-slate-300"
+                        >
+                          Go back
+                        </button>
+                      </div>
+                    </div>
                   )}
                 </div>
               )}

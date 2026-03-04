@@ -26,3 +26,10 @@ export function getEventHandlerAddress(chainId: number): Address {
 export function isCorrectChain(chainId: number): boolean {
   return chainId === SOMNIA_CHAIN_ID;
 }
+
+export function areContractsConfigured(): boolean {
+  const pm = process.env.NEXT_PUBLIC_PULSE_MARKET_ADDRESS;
+  const eh = process.env.NEXT_PUBLIC_EVENT_HANDLER_ADDRESS;
+  return !!(pm && pm !== "0x0000000000000000000000000000000000000000" &&
+            eh && eh !== "0x0000000000000000000000000000000000000000");
+}
