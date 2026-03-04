@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { parseEventLogs } from "viem";
 import { useAccount } from "wagmi";
@@ -116,6 +116,19 @@ export function CreateMarketModal({ isOpen, onClose }: Props) {
     isSuccess: subscribeSuccess,
   } = useSubscribeMarket();
 
+  const handleClose = useCallback(() => {
+    setStep(1);
+    setMode("simple");
+    setTemplate(TEMPLATES[0]);
+    setSimpleContract("");
+    setSimpleThreshold("100");
+    setSimpleDuration(3600);
+    setForm(DEFAULT_FORM);
+    setLastMarketId(null);
+    resetCreate();
+    onClose();
+  }, [onClose, resetCreate]);
+
   // Parse real marketId from receipt logs
   useEffect(() => {
     if (createSuccess && createReceipt) {
@@ -134,21 +147,10 @@ export function CreateMarketModal({ isOpen, onClose }: Props) {
   }, [createSuccess, createReceipt]);
 
   useEffect(() => {
-    if (subscribeSuccess) setTimeout(handleClose, 1500);
-  }, [subscribeSuccess]);
-
-  function handleClose() {
-    setStep(1);
-    setMode("simple");
-    setTemplate(TEMPLATES[0]);
-    setSimpleContract("");
-    setSimpleThreshold("100");
-    setSimpleDuration(3600);
-    setForm(DEFAULT_FORM);
-    setLastMarketId(null);
-    resetCreate();
-    onClose();
-  }
+    if (!subscribeSuccess) return;
+    const timeoutId = setTimeout(handleClose, 1500);
+    return () => clearTimeout(timeoutId);
+  }, [subscribeSuccess, handleClose]);
 
   function handleSimpleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -453,13 +455,13 @@ export function CreateMarketModal({ isOpen, onClose }: Props) {
                     </svg>
                   </div>
 
-                  <div>
-                    <h3 className="text-lg font-bold text-white mb-2">Market Created!</h3>
-                    <p className="text-sm text-slate-400 max-w-sm mx-auto">
-                      Now register it with Somnia's Reactivity layer so it auto-settles
-                      the instant the watched event fires.
-                    </p>
-                  </div>
+	                  <div>
+	                    <h3 className="text-lg font-bold text-white mb-2">Market Created!</h3>
+	                    <p className="text-sm text-slate-400 max-w-sm mx-auto">
+	                      Now register it with Somnia&apos;s Reactivity layer so it auto-settles
+	                      the instant the watched event fires.
+	                    </p>
+	                  </div>
 
                   <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-somnia-500/10 border border-somnia-500/20 text-xs text-slate-300">
                     <span className="text-somnia-400">⚡</span>

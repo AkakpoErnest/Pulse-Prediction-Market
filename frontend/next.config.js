@@ -11,6 +11,13 @@ const nextConfig = {
       tls: false,
     };
 
+    // Silence optional-dependency warnings from some wallet connectors
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      "@react-native-async-storage/async-storage": false,
+      "pino-pretty": false,
+    };
+
     // Required for @react-three/fiber
     config.module.rules.push({
       test: /\.(glsl|vs|fs|vert|frag)$/,
