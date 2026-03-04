@@ -68,11 +68,13 @@ Both contracts are **source-verified** on Shannon Explorer.
 
 - **Reactive auto-settlement** — markets resolve in the same block as the triggering event
 - **Zero external dependencies** — no Chainlink, no API endpoints, no cron jobs
-- **Template-based market creation** — guided UI for Transfer event conditions
+- **Template-based market creation** — guided UI with inline address validation and reactivity warning on skip
+- **Creator fee withdrawal** — market creators can claim their 2% fee directly from the market detail page
 - **Live activity feed** — watch bets and settlements stream in real time
 - **3D reactive globe** — animated arcs visualise global market activity (React Three Fiber)
 - **Particle burst effects** — settlement animations powered by Framer Motion
 - **Expiry refunds** — if a market expires before triggering, all bettors get full refunds
+- **Setup detection** — clear banner if contract env vars are missing, so the app never silently breaks
 
 ---
 
@@ -114,12 +116,14 @@ When the watched event fires on-chain, Somnia's Reactive Service calls `react()`
 ### 5. Claim
 Winners call `claimWinnings()`. Winnings are distributed proportional to stake. If the market expires without being triggered, all bettors receive full refunds via `cancelExpiredMarket()`.
 
+Market **creators** can separately withdraw their 2% fee via the "Withdraw Creator Fee" button on the market detail page, available after the first winner claims.
+
 ### Fee Structure
 
 | Recipient | Share |
 |---|---|
 | Winning bettors | 97% (proportional to stake) |
-| Market creator | 2% |
+| Market creator | 2% (claimable after first winner) |
 | Platform | 1% |
 
 ---
@@ -230,7 +234,9 @@ Key functions:
 - `placeBet(marketId, isYes)` — stake STT on YES or NO
 - `resolveMarket(marketId, outcome)` — called only by `SomniaEventHandler`
 - `claimWinnings(marketId)` — winners pull their proportional share
+- `withdrawCreatorFee(marketId)` — creator pulls their 2% after first claim
 - `cancelExpiredMarket(marketId)` — refund all bettors if expired before resolution
+- `withdrawPlatformFees()` — owner withdraws accumulated 1% fees (emits `PlatformFeesWithdrawn`)
 
 Security: `ReentrancyGuard`, `Pausable`, `Ownable` (OpenZeppelin v5). All ETH transfers use `call{}` with boolean check.
 
@@ -241,6 +247,19 @@ Implements `IReactiveContract` as the bridge between Somnia's Reactive Service a
 - `subscribeMarket(id)` — registers a market's (contract, event topic, condition) with the Reactive Service
 - `react(chainId, origin, topics[], data)` — called by Somnia when the watched event fires; decodes payload, evaluates condition, calls `resolveMarket()`
 - `_evaluateCondition()` — decodes Transfer event data and compares value against threshold using the stored operator
+
+---
+
+## Changelog
+
+### Latest (sprint week 1)
+- Inline contract address validation with error feedback in the Create Market modal
+- Reactivity warning shown when user tries to skip the subscription step
+- "Page X of N" pagination in the market feed
+- Creator fee withdraw button on the market detail page (visible to creators only)
+- `PlatformFeesWithdrawn` event added to contract for on-chain transparency
+- Condition label display unified with standard operator symbols (`>`, `≥`, `<`, `≤`, `=`)
+- Misconfigured-contract banner shown when env vars are missing
 
 ---
 
