@@ -94,9 +94,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const addToast = useCallback((message: string, type: ToastType = "info", sub?: string) => {
     const id = `toast-${counter.current++}`;
     setToasts((prev) => [...prev.slice(-4), { id, message, type, sub }]);
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 5000);
+    return () => clearTimeout(timer);
   }, []);
 
   const dismiss = useCallback((id: string) => {

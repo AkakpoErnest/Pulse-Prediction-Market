@@ -49,7 +49,8 @@ export function ActivityFeed() {
   const onActivity = useCallback((ev: ActivityEvent) => {
     setEvents((prev) => [ev, ...prev].slice(0, MAX_EVENTS));
     setPulse(true);
-    setTimeout(() => setPulse(false), 600);
+    const timer = setTimeout(() => setPulse(false), 600);
+    return () => clearTimeout(timer);
   }, []);
 
   const onSettlement = useCallback(

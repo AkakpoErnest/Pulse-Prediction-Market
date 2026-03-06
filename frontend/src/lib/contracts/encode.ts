@@ -1,4 +1,4 @@
-import { encodeAbiParameters, decodeAbiParameters, keccak256, toHex } from "viem";
+import { encodeAbiParameters, decodeAbiParameters, keccak256, toHex, formatEther } from "viem";
 import { ComparisonOp, DecodedCondition } from "@/types";
 import { COMPARISON_OP_LABELS } from "@/constants";
 
@@ -37,7 +37,7 @@ export function formatConditionLabel(conditionData: `0x${string}`, topic: string
   try {
     const { op, threshold } = decodeCondition(conditionData);
     const opSymbol = COMPARISON_OP_LABELS[op] ?? "?";
-    const stt = Number(threshold) / 1e18;
+    const stt = formatEther(threshold);
     return `value ${opSymbol} ${stt} STT`;
   } catch {
     return "custom condition";

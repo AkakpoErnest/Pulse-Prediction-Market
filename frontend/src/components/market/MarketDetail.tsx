@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { formatEther, parseEther } from "viem";
 import { useAccount } from "wagmi";
 import { motion } from "framer-motion";
@@ -138,7 +138,9 @@ function BettingPanel({
   const isExpired   = Number(market.endTime) < Date.now() / 1000;
   const canBet      = market.status === MarketStatus.Active && !alreadyBet && !isExpired && !!address;
 
-  if (isSuccess && !alreadyBet) onSuccess();
+  useEffect(() => {
+    if (isSuccess) onSuccess();
+  }, [isSuccess]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="glass-card rounded-3xl p-6">
@@ -223,7 +225,9 @@ function ClaimPanel({
   const { cancelExpiredMarket, isPending: cancelPending }                           = useCancelExpiredMarket(market.id);
   const { withdrawCreatorFee, isPending: creatorFeePending, isSuccess: creatorFeeSuccess } = useWithdrawCreatorFee(market.id);
 
-  if (claimSuccess || refundSuccess || creatorFeeSuccess) onSuccess();
+  useEffect(() => {
+    if (claimSuccess || refundSuccess || creatorFeeSuccess) onSuccess();
+  }, [claimSuccess, refundSuccess, creatorFeeSuccess]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const hasBet       = userBet && userBet.amount > 0n;
   const isWinner     = hasBet && market.status === MarketStatus.Resolved &&
