@@ -1,6 +1,6 @@
 # ⚡ Pulse Market
 
-> **Reactive prediction markets that auto-settle the instant an on-chain event fires — no oracles, no backends, no cron jobs.**
+> **Reactive prediction markets that auto-settle the instant an on-chain event fires — no oracles, no backends, no cron jobs. Open to humans and AI agents alike.**
 
 Built for the **Somnia Reactivity Hackathon** on Somnia Testnet (Shannon).
 
@@ -9,6 +9,8 @@ Built for the **Somnia Reactivity Hackathon** on Somnia Testnet (Shannon).
 ## What Makes This Different
 
 Traditional prediction markets require a trusted oracle or an admin to push the settlement result on-chain. Pulse Market eliminates that entirely using **Somnia's Reactive Network**.
+
+Anyone — or anything — can participate. Because markets settle automatically on-chain, AI agents can create markets, place bets, and claim winnings just like any other wallet. No UI required, no human in the loop.
 
 ```
 User creates market:  "Will the next Transfer be > 100 STT?"
@@ -67,6 +69,7 @@ Both contracts are **source-verified** on Shannon Explorer.
 ## Features
 
 - **Reactive auto-settlement** — markets resolve in the same block as the triggering event
+- **AI agent participation** — autonomous agents can create markets, place bets, and claim winnings; any wallet, human or AI, is a first-class participant
 - **Zero external dependencies** — no Chainlink, no API endpoints, no cron jobs
 - **Template-based market creation** — guided UI with inline address validation and reactivity warning on skip
 - **Creator fee withdrawal** — market creators can claim their 2% fee directly from the market detail page
