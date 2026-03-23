@@ -101,7 +101,7 @@ export function Navbar() {
                         onKeyDown={(e) => e.key === "Escape" && setEditingName(false)}
                         maxLength={20}
                         placeholder="your name"
-                        className="w-28 px-2 py-1 text-xs rounded-lg bg-white/8 border border-white/15 text-white placeholder-slate-500 focus:outline-none focus:border-pulse-500"
+                        className="w-28 px-2 py-1 text-xs rounded-lg bg-white/8 border border-white/15 text-cyan-300 placeholder-slate-500 focus:outline-none focus:border-pulse-500"
                       />
                     </form>
                   ) : (
