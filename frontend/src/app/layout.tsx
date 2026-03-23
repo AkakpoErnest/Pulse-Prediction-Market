@@ -21,7 +21,9 @@ export const metadata: Metadata = {
     "The first prediction market where markets settle automatically the instant an on-chain event fires, powered by Somnia's native reactivity layer.",
   keywords:    ["prediction market", "Somnia", "blockchain", "reactive", "DeFi", "web3"],
   icons: {
-    icon: "/favicon.svg",
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
   openGraph: {
     title:       "Pulse Market",
