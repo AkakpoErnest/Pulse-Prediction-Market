@@ -5,15 +5,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ActivityEvent, useReactiveEvents } from "@/hooks/useReactiveEvents";
 import { BurstEvent, SettlementBurstContainer } from "@/components/three/SettlementBurst";
 import { useUsernames } from "@/context/UserContext";
+import { useAIAgents } from "@/context/AIAgentContext";
 import { Outcome } from "@/types";
 
-const MAX_EVENTS = 20;
+const MAX_EVENTS = 30;
 
 const KIND_ICON: Record<string, string> = {
   settlement:     "⚡",
   bet:            "🎯",
   market_created: "📊",
   claim:          "💰",
+  agent_bet:      "🤖",
 };
 
 const KIND_COLOR: Record<string, string> = {
@@ -21,24 +23,37 @@ const KIND_COLOR: Record<string, string> = {
   bet:            "text-somnia-400",
   market_created: "text-emerald-400",
   claim:          "text-yellow-400",
+  agent_bet:      "text-cyan-400",
 };
 
 function timeAgo(ts: number): string {
   const s = Math.floor((Date.now() - ts) / 1000);
-  if (s < 60)  return `${s}s ago`;
+  if (s < 60)   return `${s}s ago`;
   if (s < 3600) return `${Math.floor(s / 60)}m ago`;
   return `${Math.floor(s / 3600)}h ago`;
+}
+
+// ─── Unified event type (on-chain + agent) ────────────────────────────────────
+
+interface FeedEvent {
+  id:        string;
+  kind:      string;
+  label:     string;
+  sub?:      string;
+  bettor?:   string;
+  timestamp: number;
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function ActivityFeed() {
-  const [events, setEvents]   = useState<ActivityEvent[]>([]);
-  const [bursts, setBursts]   = useState<BurstEvent[]>([]);
-  const [isOpen, setIsOpen]   = useState(false);
-  const [pulse, setPulse]     = useState(false);
-  const [, setTick]           = useState(0); // force re-render for timeAgo
-  const { displayName } = useUsernames();
+  const [events, setEvents] = useState<FeedEvent[]>([]);
+  const [bursts, setBursts] = useState<BurstEvent[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [pulse,  setPulse]  = useState(false);
+  const [, setTick]         = useState(0);
+  const { displayName }     = useUsernames();
+  const { agentEvents }     = useAIAgents();
 
   // Refresh timestamps every 15s
   useEffect(() => {
@@ -46,15 +61,35 @@ export function ActivityFeed() {
     return () => clearInterval(t);
   }, []);
 
+  // Merge agent events into the feed
+  useEffect(() => {
+    if (agentEvents.length === 0) return;
+    const latest = agentEvents[0];
+    const ev: FeedEvent = {
+      id:        latest.id,
+      kind:      "agent_bet",
+      label:     latest.label,
+      sub:       latest.isYes !== undefined ? (latest.isYes ? "Bullish signal detected" : "Bearish signal detected") : undefined,
+      timestamp: latest.timestamp,
+    };
+    setEvents(prev => {
+      if (prev.find(e => e.id === ev.id)) return prev;
+      return [ev, ...prev].slice(0, MAX_EVENTS);
+    });
+    setPulse(true);
+    setTimeout(() => setPulse(false), 600);
+  }, [agentEvents]);
+
   const onActivity = useCallback((ev: ActivityEvent) => {
-    setEvents((prev) => [ev, ...prev].slice(0, MAX_EVENTS));
+    const feed: FeedEvent = { ...ev };
+    setEvents((prev) => [feed, ...prev].slice(0, MAX_EVENTS));
     setPulse(true);
     const timer = setTimeout(() => setPulse(false), 600);
     return () => clearTimeout(timer);
   }, []);
 
   const onSettlement = useCallback(
-    (marketId: bigint, outcome: number, x: number, y: number) => {
+    (_marketId: bigint, outcome: number, x: number, y: number) => {
       const id = `burst-${Date.now()}`;
       setBursts((prev) => [...prev, { id, x, y, isYes: outcome === Outcome.Yes }]);
     },
@@ -66,6 +101,8 @@ export function ActivityFeed() {
   }, []);
 
   useReactiveEvents({ onActivity, onSettlement });
+
+  const agentCount = events.filter(e => e.kind === "agent_bet").length;
 
   return (
     <>
@@ -104,7 +141,14 @@ export function ActivityFeed() {
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
                 <span className="text-sm font-bold text-white">Live Activity</span>
-                <span className="text-xs text-slate-500">Somnia Testnet</span>
+                <div className="flex items-center gap-2">
+                  {agentCount > 0 && (
+                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-400 border border-cyan-500/20">
+                      🤖 {agentCount} agent
+                    </span>
+                  )}
+                  <span className="text-xs text-slate-500">Somnia Testnet</span>
+                </div>
               </div>
 
               {/* Events */}
@@ -124,9 +168,9 @@ export function ActivityFeed() {
                         exit={{    opacity: 0, height: 0 }}
                         className="flex items-start gap-2.5 px-4 py-2.5 border-b border-white/5 last:border-0 hover:bg-white/3 transition-colors"
                       >
-                        <span className="text-base mt-0.5 shrink-0">{KIND_ICON[ev.kind]}</span>
+                        <span className="text-base mt-0.5 shrink-0">{KIND_ICON[ev.kind] ?? "•"}</span>
                         <div className="flex-1 min-w-0">
-                          <p className={`text-xs font-semibold ${KIND_COLOR[ev.kind]} truncate`}>
+                          <p className={`text-xs font-semibold ${KIND_COLOR[ev.kind] ?? "text-slate-300"} truncate`}>
                             {ev.kind === "bet" && ev.bettor
                               ? ev.label.replace(
                                   `${ev.bettor.slice(0, 6)}…${ev.bettor.slice(-4)}`,

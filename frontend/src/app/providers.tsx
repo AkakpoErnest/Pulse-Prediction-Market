@@ -6,6 +6,7 @@ import { WagmiProvider } from "wagmi";
 import { wagmiConfig } from "@/lib/wagmi";
 import { ToastProvider } from "@/context/ToastContext";
 import { UserProvider } from "@/context/UserContext";
+import { AIAgentProvider } from "@/context/AIAgentContext";
 import "@rainbow-me/rainbowkit/styles.css";
 
 const queryClient = new QueryClient({
@@ -36,7 +37,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
         >
           <ToastProvider>
             <UserProvider>
-              {children}
+              <AIAgentProvider>
+                {children}
+              </AIAgentProvider>
             </UserProvider>
           </ToastProvider>
         </RainbowKitProvider>

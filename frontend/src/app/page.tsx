@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/layout/HeroSection";
 import { MarketFeed } from "@/components/market/MarketFeed";
 import { StatsBar } from "@/components/layout/StatsBar";
 import { ActivityFeed } from "@/components/ui/ActivityFeed";
+import { AIAgentPanel } from "@/components/ui/AIAgentPanel";
 
 export default function HomePage() {
   return (
@@ -19,6 +20,7 @@ export default function HomePage() {
         <Navbar />
         <HeroSection />
         <StatsBar />
+        <AIAgentPanel />
         <MarketFeed />
       </div>
 
